@@ -27,10 +27,11 @@ if( !class_exists( 'WC_Product_CSV_Import_Suite_Ext_Ajax' ) ) :
             $results = [
                 'status'    => 1,
                 'next'      => 0,
+                'import_id' => $_POST[ 'import_id' ],
                 'items'     => []
             ];
 
-            $products = WC_Product_CSV_Import_Suite_Ext_Import::getUnimportedProducts( $_POST[ 'limit' ], $_POST[ 'offset' ] );
+            $products = WC_Product_CSV_Import_Suite_Ext_Import::getUnimportedProducts( $_POST[ 'import_id' ], $_POST[ 'limit' ], $_POST[ 'offset' ] );
             
             if( 0 < count( $products ) ) :
                 $results[ 'next' ] = intval( $_POST[ 'limit' ] ) + intval( $_POST[ 'offset' ] );
@@ -39,9 +40,9 @@ if( !class_exists( 'WC_Product_CSV_Import_Suite_Ext_Ajax' ) ) :
                 foreach( $products as $product ) :
                     global $wpdb;
 
-                    $wpdb->delete( "{$wpdb->prefix}posts", [ 'ID' => $product->ID ], [ '%d' ] ); // Delete products
-                    $wpdb->delete( "{$wpdb->prefix}postmeta", [ 'post_id' => $product->ID ], [ '%d' ] ); // Delete product meta datas
-                    $wpdb->delete( "{$wpdb->prefix}term_relationships", [ 'object_id' => $product->ID ], [ '%d' ] ); // Delete product taxonomies
+                    $wpdb->delete( "{$wpdb->prefix}posts", [ 'ID' => $product ], [ '%d' ] ); // Delete products
+                    $wpdb->delete( "{$wpdb->prefix}postmeta", [ 'post_id' => $product ], [ '%d' ] ); // Delete product meta datas
+                    $wpdb->delete( "{$wpdb->prefix}term_relationships", [ 'object_id' => $product ], [ '%d' ] ); // Delete product taxonomies
                 endforeach;
             else :
                 $results[ 'status' ] = 0;
